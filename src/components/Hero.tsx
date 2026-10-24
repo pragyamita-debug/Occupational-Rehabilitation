@@ -78,11 +78,7 @@ export function Hero({ resume, isExample, onUpload }: Props) {
         </div>
 
         <div className="hero__visual" aria-hidden>
-          <span className="hero__blob" />
-          <span className="hero__dot" />
-          <div className="hero__arch">
-            <span className="hero__sun" />
-            <span className="hero__rays" />
+          <div className="hero__photo">
             <img src={hero} alt="" />
           </div>
           <p className="hero__note">

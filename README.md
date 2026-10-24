@@ -1,8 +1,7 @@
 # CV → Dashboard (Occupational Rehabilitation)
 
 Candidates upload a CV (PDF, DOCX or TXT) and get an animated portfolio dashboard in a clean clinic style:
-white and mint, deep pine green, a clinician photo in an arch with a sun rising behind her, real clinic
-photos, and a handwritten motto.
+white and mint, deep pine green, a full-size clinician photo, real clinic photos, and a handwritten motto.
 
 Everything runs in the browser. The CV is read client-side and never sent to a server.
 
@@ -24,7 +23,7 @@ Everything runs in the browser. The CV is read client-side and never sent to a s
 | Section | Built from |
 | --- | --- |
 | Nav | cross-and-sun mark, name, links, expanding search (Enter jumps to and highlights the match), gear menu, **Upload CV** / **Get in touch** |
-| Hero | specialism, name (last name in green), role, summary; projects / skills / years counting up; clinician photo in an arch, motto handwritten on the window |
+| Hero | specialism, name (last name in green), role, summary; projects / skills / years counting up; full clinician photo with the motto handwritten beside it |
 | Fact strip | current role, degree, certification, city, top achievement, next step |
 | About | summary and a checklist; the reception photo with the candidate’s name on the wall and a counting experience badge |
 | Career journey | roles listed in a phone mock-up — the selected one walks through them and its bullets show beside it |
@@ -43,7 +42,6 @@ Everything runs in the browser. The CV is read client-side and never sent to a s
 | Counting numbers | hero stats, experience badge, numbers band | `useCountUp` — rAF + ease-out-expo, starts when in view; the “+” lands when the count finishes |
 | Moving, lit borders | fact, quote, skill and project cards | conic gradient on `@property --angle`, masked to a thin ring, plus a blurred halo (`GlowCard`) |
 | Hover | every card, icon and button | pointer spotlight + slight tilt, lift, photo zoom, icons fill green |
-| Rising sun | hero arch | the sun climbs into place behind the clinician and the rays start turning |
 | Handwriting | hero | each word is written in, then the heart line draws |
 | Role walk, heartbeat line, stars | career journey, mission, milestones | small React timers and CSS transitions (pause on hover) |
 
@@ -91,5 +89,6 @@ src/
 ```
 
 The photos in `src/assets/photos/` were cut from the design mock-up (printed text and logos removed) and
-enlarged with Real-ESRGAN, then sized for high-density screens. For the sharpest page, swap in original
+enlarged with Real-ESRGAN, then sized for high-density screens. The hero photo mixes the Real-ESRGAN result
+with a plain enlargement and a little grain so it reads as a photograph rather than an airbrushed render. For the sharpest page, swap in original
 high-resolution photos with the same file names.
