@@ -89,6 +89,7 @@ src/
 ```
 
 The photos in `src/assets/photos/` were cut from the design mock-up (printed text and logos removed) and
-enlarged with Real-ESRGAN, then sized for high-density screens. The hero photo mixes the Real-ESRGAN result
-with a plain enlargement and a little grain so it reads as a photograph rather than an airbrushed render. For the sharpest page, swap in original
+enlarged with Real-ESRGAN, then sized for high-density screens. The hero photo is a full-resolution photo by
+Ato Aikins on [Unsplash](https://unsplash.com/photos/TPT4pevJEmQ) (free under the Unsplash License), loaded from Unsplash's image
+server in the size each screen needs; if it can't load, the bundled `hero.jpg` is shown instead. For the sharpest page, swap in original
 high-resolution photos with the same file names.

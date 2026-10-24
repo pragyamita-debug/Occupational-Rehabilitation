@@ -6,6 +6,9 @@ import { GlowCard, type Accent } from './GlowCard';
 import { Icon, type IconName } from './Icon';
 import './Hero.css';
 
+/** Hero photo: Ato Aikins on Unsplash — https://unsplash.com/photos/TPT4pevJEmQ */
+const PHOTO = 'https://images.unsplash.com/photo-1678695972687-033fa0bdbac9?auto=format&fit=crop&q=80';
+
 /** "Occupational Therapist | Work Rehabilitation" → ["Occupational Therapist", "Work Rehabilitation"] */
 export const splitHeadline = (h: string) => h.split(/\s*[|•·–—]\s*/).filter(Boolean);
 
@@ -79,8 +82,24 @@ export function Hero({ resume, isExample, onUpload }: Props) {
 
         <div className="hero__visual" aria-hidden>
           <div className="hero__photo">
-            <img src={hero} alt="" />
+            {/* full-resolution photo served by Unsplash (free under the Unsplash License);
+                if it can't load, the bundled photo takes its place */}
+            <img
+              src={`${PHOTO}&w=1000`}
+              srcSet={`${PHOTO}&w=600 600w, ${PHOTO}&w=1000 1000w, ${PHOTO}&w=1400 1400w`}
+              sizes="(max-width: 960px) 90vw, 470px"
+              alt=""
+              onError={(e) => {
+                const img = e.currentTarget;
+                img.onerror = null;
+                img.srcset = '';
+                img.src = hero;
+              }}
+            />
           </div>
+          <a className="hero__credit" href="https://unsplash.com/photos/TPT4pevJEmQ" target="_blank" rel="noreferrer" tabIndex={-1}>
+            Photo: Ato Aikins / Unsplash
+          </a>
           <p className="hero__note">
             {motto.map((w, i) => (
               <span key={i} style={{ ['--i' as string]: i }}>
