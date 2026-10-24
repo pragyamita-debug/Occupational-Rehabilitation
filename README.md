@@ -1,7 +1,7 @@
 # CV → Dashboard (Occupational Rehabilitation)
 
 Candidates upload a CV (PDF, DOCX or TXT) and get an animated portfolio dashboard in a clean clinic style:
-white and mint, deep pine green, a full-size clinician photo, real clinic photos, and a handwritten motto.
+white and mint, deep pine green, a live profile card built from the CV, real clinic photos, and a handwritten motto.
 
 Everything runs in the browser. The CV is read client-side and never sent to a server.
 
@@ -23,7 +23,7 @@ Everything runs in the browser. The CV is read client-side and never sent to a s
 | Section | Built from |
 | --- | --- |
 | Nav | cross-and-sun mark, name, links, expanding search (Enter jumps to and highlights the match), gear menu, **Upload CV** / **Get in touch** |
-| Hero | specialism, name (last name in green), role, summary; projects / skills / years counting up; full clinician photo with the motto handwritten beside it |
+| Hero | specialism, name (last name in green), role, summary; projects / skills / years counting up; a profile card (initials, years ring, career path, top skills, next step) with the motto handwritten beside it |
 | Fact strip | current role, degree, certification, city, top achievement, next step |
 | About | summary and a checklist; the reception photo with the candidate’s name on the wall and a counting experience badge |
 | Career journey | roles listed in a phone mock-up — the selected one walks through them and its bullets show beside it |
@@ -89,7 +89,5 @@ src/
 ```
 
 The photos in `src/assets/photos/` were cut from the design mock-up (printed text and logos removed) and
-enlarged with Real-ESRGAN, then sized for high-density screens. The hero photo is a full-resolution photo by
-Ato Aikins on [Unsplash](https://unsplash.com/photos/TPT4pevJEmQ) (free under the Unsplash License), loaded from Unsplash's image
-server in the size each screen needs; if it can't load, the bundled `hero.jpg` is shown instead. For the sharpest page, swap in original
+enlarged with Real-ESRGAN, then sized for high-density screens. For the sharpest page, swap in original
 high-resolution photos with the same file names.

@@ -1,4 +1,3 @@
-import hero from '../assets/photos/hero.jpg';
 import { useCountUp } from '../hooks/useCountUp';
 import { useInView } from '../hooks/useInView';
 import type { Resume } from '../lib/types';
@@ -6,8 +5,6 @@ import { GlowCard, type Accent } from './GlowCard';
 import { Icon, type IconName } from './Icon';
 import './Hero.css';
 
-/** Hero photo: Ato Aikins on Unsplash — https://unsplash.com/photos/TPT4pevJEmQ */
-const PHOTO = 'https://images.unsplash.com/photo-1678695972687-033fa0bdbac9?auto=format&fit=crop&q=80';
 
 /** "Occupational Therapist | Work Rehabilitation" → ["Occupational Therapist", "Work Rehabilitation"] */
 export const splitHeadline = (h: string) => h.split(/\s*[|•·–—]\s*/).filter(Boolean);
@@ -81,25 +78,7 @@ export function Hero({ resume, isExample, onUpload }: Props) {
         </div>
 
         <div className="hero__visual" aria-hidden>
-          <div className="hero__photo">
-            {/* full-resolution photo served by Unsplash (free under the Unsplash License);
-                if it can't load, the bundled photo takes its place */}
-            <img
-              src={`${PHOTO}&w=1000`}
-              srcSet={`${PHOTO}&w=600 600w, ${PHOTO}&w=1000 1000w, ${PHOTO}&w=1400 1400w`}
-              sizes="(max-width: 960px) 90vw, 470px"
-              alt=""
-              onError={(e) => {
-                const img = e.currentTarget;
-                img.onerror = null;
-                img.srcset = '';
-                img.src = hero;
-              }}
-            />
-          </div>
-          <a className="hero__credit" href="https://unsplash.com/photos/TPT4pevJEmQ" target="_blank" rel="noreferrer" tabIndex={-1}>
-            Photo: Ato Aikins / Unsplash
-          </a>
+          <ProfileCard resume={resume} />
           <p className="hero__note">
             {motto.map((w, i) => (
               <span key={i} style={{ ['--i' as string]: i }}>
@@ -113,6 +92,128 @@ export function Hero({ resume, isExample, onUpload }: Props) {
         </div>
       </div>
     </section>
+  );
+}
+
+/* ---------- the profile card that sits where the photo was ---------- */
+
+function Ring({ value, max, run }: { value: number; max: number; run: boolean }) {
+  const n = useCountUp(value, run, { duration: 2200, delay: 400 });
+  const r = 34;
+  const c = 2 * Math.PI * r;
+  const frac = Math.min(n / max, 1);
+  return (
+    <span className="ring">
+      <svg viewBox="0 0 80 80">
+        <circle cx="40" cy="40" r={r} className="ring__track" />
+        <circle cx="40" cy="40" r={r} className="ring__fill" style={{ strokeDasharray: c, strokeDashoffset: c * (1 - frac) }} />
+      </svg>
+      <b>{Math.round(n)}</b>
+      <small>years</small>
+    </span>
+  );
+}
+
+function ProfileCard({ resume }: { resume: Resume }) {
+  const [ref, inView] = useInView<HTMLDivElement>(0.3);
+  const [role, focus] = splitHeadline(resume.headline);
+  const initials = resume.name
+    .split(/\s+/)
+    .map((w) => w[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
+  const roles = resume.experience.slice(0, 3);
+  const goal = resume.goals[1] || resume.goals[0];
+  const cert = resume.certifications[0];
+  const { stats } = resume;
+
+  return (
+    <div className={`pcard ${inView ? 'is-on' : ''}`} ref={ref}>
+      <GlowCard className="pcard__main" accent="green" speed={9} tilt>
+        <header className="pcard__head">
+          <span className="pcard__avatar">{initials}</span>
+          <span className="pcard__who">
+            <b>{resume.name}</b>
+            <small>{role || resume.headline}</small>
+          </span>
+          <span className="pcard__live">
+            <i /> Available
+          </span>
+        </header>
+
+        <div className="pcard__summary">
+          <Ring value={stats.years} max={Math.max(10, stats.years)} run={inView} />
+          <div className="pcard__meta">
+            <span>
+              <Icon name="pin" size={13} /> {resume.location || 'Location'}
+            </span>
+            <span>
+              <Icon name="graduation" size={13} /> {resume.education[0]?.degree || 'Education'}
+            </span>
+            <span>
+              <Icon name="heartPulse" size={13} /> {focus || resume.skills[0] || 'Specialism'}
+            </span>
+          </div>
+        </div>
+
+        <p className="pcard__label">Career path</p>
+        <ol className="pcard__path">
+          {roles.map((r, i) => (
+            <li key={r.role + i} style={{ ['--i' as string]: i }}>
+              <span className={`pcard__dot ${i === 0 ? 'is-now' : ''}`} />
+              <span>
+                <b>{r.role}</b>
+                <small>{[r.company, r.period].filter(Boolean).join(' · ')}</small>
+              </span>
+            </li>
+          ))}
+        </ol>
+
+        <p className="pcard__label">Top skills</p>
+        <ul className="pcard__skills">
+          {resume.skills.slice(0, 6).map((s, i) => (
+            <li key={s} style={{ ['--i' as string]: i }}>
+              {s}
+            </li>
+          ))}
+        </ul>
+
+        {goal && (
+          <div className="pcard__goal">
+            <Icon name="target" size={16} />
+            <span>
+              <small>{goal.label}</small>
+              <b>{goal.value}</b>
+            </span>
+          </div>
+        )}
+      </GlowCard>
+
+      <div className="pcard__float pcard__float--top">
+        <span className="pcard__float-icon">
+          <Icon name="folder" size={16} />
+        </span>
+        <span>
+          <b>
+            {stats.projects}
+            {stats.projectsPlus ? '+' : ''}
+          </b>
+          <small>Projects</small>
+        </span>
+      </div>
+      {cert && (
+        <div className="pcard__float pcard__float--bottom">
+          <span className="pcard__float-icon">
+            <Icon name="shield" size={16} />
+          </span>
+          <span>
+            <small>Certified</small>
+            <b>{cert}</b>
+          </span>
+        </div>
+      )}
+    </div>
   );
 }
 

@@ -2,7 +2,7 @@ import { useRef, useState, type DragEvent } from 'react';
 import { ACCEPTED } from '../lib/extractText';
 import { GlowCard } from './GlowCard';
 import { Icon } from './Icon';
-import heroPhoto from '../assets/photos/hero.jpg';
+import heroPhoto from '../assets/photos/clinic.jpg';
 import { Logo } from './Logo';
 import './UploadScreen.css';
 
