@@ -2,7 +2,7 @@
 
 Candidates upload a CV (PDF, DOCX or TXT) and get an animated portfolio dashboard in a calm, two-column
 wellbeing style: soft mint, deep teal, rounded white panels, real desk / notebook / coastline photos, a
-handwritten motto on the window and a morning sun coming up.
+handwritten motto on the window and steam rising from a coffee mug.
 
 Everything runs in the browser. The CV is read client-side and never sent to a server.
 
@@ -24,7 +24,7 @@ Everything runs in the browser. The CV is read client-side and never sent to a s
 | Part | Built from |
 | --- | --- |
 | Top bar | logo, name and focus, section links, expanding search (Enter jumps to and highlights the match), bell with the goals, profile menu, **Upload CV** / **Get in touch** |
-| Banner | focus, name, role, first line of the summary; desk photo with the motto handwritten on the window and a rising sun |
+| Banner | focus, name, role, first line of the summary; desk photo with the motto handwritten on the window and steam curling up from the mug |
 | Skill tiles | the first five skills (all on request), each with an interest or certification underneath |
 | My approach | summary, a checklist of certifications / degrees / skills, the notebook photo |
 | My projects | dark band with a mountain and flag; pick a project to read it and see its tags |
@@ -43,7 +43,7 @@ Everything runs in the browser. The CV is read client-side and never sent to a s
 | Decoding text | degree and city tiles | `useScramble` — characters settle left to right |
 | Moving, lit borders | skill tiles, highlight cards | conic gradient on `@property --angle`, masked to a thin ring, plus a blurred halo (`GlowCard`) |
 | Hover | every tile, card, link and icon | pointer spotlight + slight tilt, lift, photo zoom, icons fill teal |
-| Rising sun | banner window, coast photo | the sun climbs into place, rays fade in and turn; the coast sun glows up when it scrolls into view |
+| Rising steam | banner | three soft wisps drift up from the coffee mug and fade, one after another |
 | Handwriting | banner, notebook | words are written in one after another; the heart beats |
 | Step walk, flag, sprig | experience, projects band, closing card | small React timers and CSS keyframes (pause on hover) |
 

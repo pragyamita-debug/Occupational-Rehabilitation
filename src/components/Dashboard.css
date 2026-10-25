@@ -64,12 +64,18 @@
 .banner__art img { width: 100%; height: 100%; object-fit: cover; object-position: 40% 60%; animation: banner-in 1.4s var(--ease-out) both, drift 26s 1.4s ease-in-out infinite alternate; }
 @keyframes banner-in { from { opacity: 0; transform: scale(1.05); } }
 @keyframes drift { to { transform: scale(1.03) translateX(-1%); } }
-/* morning sun coming up in the window behind the plant */
-.banner__sun { position: absolute; left: 62%; top: 22%; width: 120px; height: 120px; margin: -60px 0 0 -60px; border-radius: 50%; background: radial-gradient(circle, #fffaf0 0%, var(--sun) 24%, rgba(255, 210, 130, 0.4) 46%, rgba(255, 200, 120, 0) 70%); mix-blend-mode: screen; animation: sun-rise 3.4s 0.3s var(--ease-out) both, breathe-sun 7s 3.7s ease-in-out infinite; }
-.banner__rays { position: absolute; left: 62%; top: 22%; width: 360px; height: 360px; margin: -180px 0 0 -180px; border-radius: 50%; background: repeating-conic-gradient(rgba(255, 230, 170, 0.28) 0deg 2.5deg, transparent 2.5deg 13deg); -webkit-mask: radial-gradient(circle, transparent 15%, #000 24%, transparent 62%); mask: radial-gradient(circle, transparent 15%, #000 24%, transparent 62%); mix-blend-mode: screen; opacity: 0; animation: rays-in 2s 2.3s var(--ease-out) forwards, spin 110s linear infinite; }
-@keyframes sun-rise { from { opacity: 0; transform: translateY(120px) scale(0.7); } 40% { opacity: 1; } }
+/* steam drifting up from the mug */
+.banner__steam { position: absolute; left: 31%; top: 34%; width: 14%; overflow: visible; }
+.banner__steam path { fill: none; stroke: #fff; stroke-width: 5; stroke-linecap: round; filter: blur(1.3px) drop-shadow(0 0 4px rgba(255, 255, 255, 0.9)) drop-shadow(0 1px 2px rgba(30, 70, 65, 0.25)); opacity: 0; animation: steam 4.2s ease-in-out infinite; }
+.banner__steam path:nth-child(2) { animation-delay: 1.4s; }
+.banner__steam path:nth-child(3) { animation-delay: 2.8s; }
+@keyframes steam {
+  0% { opacity: 0; transform: translateY(18px) scaleY(0.7); }
+  30% { opacity: 1; }
+  60% { opacity: 0.8; }
+  100% { opacity: 0; transform: translateY(-22px) scaleY(1.1) skewX(-6deg); }
+}
 @keyframes breathe-sun { 50% { transform: scale(1.08); } }
-@keyframes rays-in { to { opacity: 1; } }
 @keyframes spin { to { rotate: 360deg; } }
 .banner__note { position: absolute; right: 7%; top: 9%; display: grid; justify-items: center; font-family: var(--font-hand); font-size: clamp(24px, 2.3vw, 34px); line-height: 1.05; color: #fff; transform: rotate(-8deg); text-shadow: 0 1px 8px rgba(0, 40, 35, 0.25); }
 .banner__note span { opacity: 0; animation: write 0.7s var(--ease-out) forwards; animation-delay: calc(1.2s + var(--i) * 0.3s); }
@@ -138,9 +144,6 @@
 .quoterow { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 10px; padding: 10px; background: #f6faf9; }
 .quote { position: relative; min-height: 200px; overflow: hidden; border-radius: 10px; background: linear-gradient(90deg, transparent 30%, #e9f2f5 52%); isolation: isolate; }
 .quote img { position: absolute; z-index: -2; left: 0; top: 0; width: 55%; height: 100%; object-fit: cover; -webkit-mask: linear-gradient(90deg, #000 60%, transparent); mask: linear-gradient(90deg, #000 60%, transparent); }
-/* the real sun in the photo gets a slow glow as it comes into view */
-.quote__sun { position: absolute; z-index: -1; left: 22%; top: 34%; width: 110px; height: 110px; margin: -55px 0 0 -55px; border-radius: 50%; background: radial-gradient(circle, rgba(255, 244, 220, 0.95), rgba(255, 210, 150, 0.45) 40%, transparent 70%); mix-blend-mode: screen; opacity: 0; transform: translateY(40px) scale(0.6); transition: opacity 1.8s, transform 3s var(--ease-out); }
-.quote.is-up .quote__sun { opacity: 1; transform: none; }
 .quote blockquote { position: absolute; left: 50%; top: 50%; right: 18px; margin: 0; translate: 0 -50%; color: var(--forest); }
 .quote blockquote svg { color: var(--accent); }
 .quote blockquote p { margin-top: 6px; font-family: var(--font-hand); font-size: clamp(17px, 1.5vw, 21px); line-height: 1.25; color: #1d3b39; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
@@ -254,18 +257,18 @@
   .tools__list li:nth-child(3)::before { display: none; }
   .quote { min-height: 230px; background: linear-gradient(180deg, transparent 45%, #e9f2f5 70%); }
   .quote img { width: 100%; height: 60%; -webkit-mask: linear-gradient(180deg, #000 60%, transparent); mask: linear-gradient(180deg, #000 60%, transparent); }
-  .quote__sun { left: 40%; top: 22%; }
   .quote blockquote { left: 18px; top: auto; bottom: 14px; translate: none; }
   .footer__nav { margin-left: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .banner__art img, .banner__sun, .banner__rays, .banner__note span, .banner__heart, .banner__title, .banner__intro, .approach__note span, .tools__flag, .welcome__badge .logo__sun, .tools__copy p, .steps em {
+  .banner__art img, .banner__steam path, .banner__note span, .banner__heart, .banner__title, .banner__intro, .approach__note span, .tools__flag, .welcome__badge .logo__sun, .tools__copy p, .steps em {
     animation: none;
     opacity: 1;
     clip-path: none;
   }
-  .quote__sun, .mission__stem, .mission__leaf { transition: none; }
-  .quote__sun, .mission__leaf { opacity: 1; transform: none; }
+  .mission__stem, .mission__leaf { transition: none; }
+  .mission__leaf { opacity: 1; transform: none; }
+  .banner__steam { display: none; }
   .mission__stem { stroke-dashoffset: 0; }
 }

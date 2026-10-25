@@ -23,7 +23,7 @@ const firstSentence = (t: string) => t.split(/(?<=[.!?])\s/)[0] || t;
 
 /* =============================== main column =============================== */
 
-/** Photo banner: desk by a sunny window, the motto handwritten on the glass, morning sun coming up. */
+/** Photo banner: desk by a sunny window, the motto handwritten on the glass, steam rising from the mug. */
 export function Banner({ resume, isExample, onUpload }: { resume: Resume; isExample: boolean; onUpload: () => void }) {
   const [role, focus] = splitHeadline(resume.headline);
   const motto = (resume.motto || 'Healthy mind. Productive work.').replace(/[.!]/g, '').split(/\s+/).slice(0, 5);
@@ -31,8 +31,12 @@ export function Banner({ resume, isExample, onUpload }: { resume: Resume; isExam
     <section id="home" className="banner" aria-label="Introduction">
       <div className="banner__art" aria-hidden>
         <img src={desk} alt="" />
-        <span className="banner__sun" />
-        <span className="banner__rays" />
+        {/* steam curling up from the coffee mug */}
+        <svg className="banner__steam" viewBox="0 0 60 90">
+          <path d="M20 88 C 10 72, 30 62, 20 46 C 12 34, 26 24, 20 8" />
+          <path d="M32 88 C 24 70, 42 60, 32 44 C 24 32, 38 22, 32 6" />
+          <path d="M44 88 C 36 74, 52 64, 44 50 C 38 40, 48 30, 44 16" />
+        </svg>
         <p className="banner__note">
           {motto.map((w, i) => (
             <span key={i} style={{ ['--i' as string]: i }}>
@@ -191,7 +195,6 @@ export function QuoteRow({ resume }: { resume: Resume }) {
     <div className="panel quoterow" ref={ref}>
       <div className={`quote ${inView ? 'is-up' : ''}`}>
         <img src={coast} alt="" loading="lazy" />
-        <span className="quote__sun" aria-hidden />
         <blockquote data-search>
           <Icon name="quote" size={22} />
           <p>{resume.tagline || resume.motto}</p>
