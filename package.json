@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "Candidates upload a CV and get an animated occupational-rehabilitation-style portfolio dashboard.",
+  "description": "Candidates upload a CV and get an animated workplace-mental-health-style portfolio dashboard.",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",

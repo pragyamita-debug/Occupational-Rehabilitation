@@ -17,7 +17,7 @@ export const placeholder: Resume = {
   },
   summary:
     'Two or three sentences about who you are, the problems you like to work on and what you are looking for next. Upload a CV and this is replaced by your own profile.',
-  motto: 'Healthy people. Happier lives.',
+  motto: 'Healthy mind. Productive work.',
 
   experience: [
     {
@@ -65,7 +65,7 @@ export const placeholder: Resume = {
     { label: 'Next Step', value: 'What you are working on now' },
   ],
 
-  interests: ['Focus Area One', 'Focus Area Two'],
+  interests: ['Focus Area One', 'Focus Area Two', 'Focus Area Three'],
   languages: [],
 
   stats: { years: 5, yearsPlus: true, projects: 4, projectsPlus: false, skills: 8 },

@@ -28,19 +28,19 @@ describe('parseResume — sample CV', () => {
   const cv = parseResume(readFileSync('src/data/sample-cv.txt', 'utf8'), TODAY);
 
   it('pulls the header', () => {
-    expect(cv.name).toBe('Maya Patel');
-    expect(cv.headline).toBe('Occupational Therapist | Work Rehabilitation & Return-to-Work');
-    expect(cv.tagline).toMatch(/^Helping people get back to the work/);
-    expect(cv.email).toBe('maya.patel@example.com');
+    expect(cv.name).toBe('Jordan Ellis');
+    expect(cv.headline).toBe('Occupational Psychologist | Workplace Mental Health');
+    expect(cv.tagline).toMatch(/^Evidence-based support for healthier minds/);
+    expect(cv.email).toBe('jordan.ellis@example.com');
     expect(cv.phone).toBe('+1 312 555 0187');
     expect(cv.location).toBe('Chicago, USA');
     expect(cv.links.website).toBeUndefined();
-    expect(cv.links.linkedin).toContain('linkedin.com/in/maya-patel-example');
+    expect(cv.links.linkedin).toContain('linkedin.com/in/jordan-ellis-example');
   });
 
   it('builds experience and stats', () => {
     expect(cv.experience).toHaveLength(3);
-    expect(cv.experience[0]).toMatchObject({ role: 'Senior Occupational Therapist', company: 'Example Work Health Centre', current: true });
+    expect(cv.experience[0]).toMatchObject({ role: 'Senior Occupational Psychologist', company: 'Example Workplace Wellbeing Centre', current: true });
     expect(cv.stats.years).toBe(8);
     expect(cv.stats.yearsPlus).toBe(true);
   });
@@ -53,10 +53,10 @@ describe('parseResume — sample CV', () => {
 
   it('reads skills, projects, goals and the rest', () => {
     expect(cv.skills).toHaveLength(10);
-    expect(cv.projects.map((p) => p.title)).toEqual(['Early Return-to-Work Pathway', 'Workplace Ergonomics Programme', 'Hand Therapy Clinic', 'Healthy Habits for Shift Workers']);
-    expect(cv.goals[0]).toEqual({ label: 'Goal', value: 'Lead a community work-rehabilitation service', note: 'within three years' });
+    expect(cv.projects.map((p) => p.title)).toEqual(['Burnout Prevention Programme', 'Mindful Mondays', 'Stress Risk Toolkit', 'Return-to-Work Pathway']);
+    expect(cv.goals[0]).toEqual({ label: 'Goal', value: 'Lead a workplace mental-health service for a large employer', note: 'within three years' });
     expect(cv.certifications).toHaveLength(2);
-    expect(cv.motto).toBe('Healthy people. Happier lives.');
+    expect(cv.motto).toBe('Healthy mind. Productive work.');
   });
 });
 

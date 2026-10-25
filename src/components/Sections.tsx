@@ -1,590 +1,441 @@
 import { useEffect, useState } from 'react';
-import care from '../assets/photos/care.jpg';
-import clinic from '../assets/photos/clinic.jpg';
-import family from '../assets/photos/family.jpg';
-import mentor from '../assets/photos/mentor.jpg';
-import p1 from '../assets/photos/project-1.jpg';
-import p3 from '../assets/photos/project-3.jpg';
+import article from '../assets/photos/article.jpg';
+import coast from '../assets/photos/coast.jpg';
+import desk from '../assets/photos/desk.jpg';
+import guide from '../assets/photos/guide.jpg';
+import notebook from '../assets/photos/notebook.jpg';
+import podcast from '../assets/photos/podcast.jpg';
 import { useCountUp } from '../hooks/useCountUp';
 import { useInView } from '../hooks/useInView';
 import { useReducedMotion } from '../hooks/useReducedMotion';
+import { useScramble } from '../hooks/useScramble';
 import type { Resume } from '../lib/types';
 import { GlowCard, type Accent } from './GlowCard';
-import { splitHeadline } from './Hero';
 import { Icon, type IconName } from './Icon';
 import { Logo } from './Logo';
 import { NAV } from './NavBar';
 import { Reveal } from './Reveal';
 
-const PROJECT_PHOTOS = [p1, care, p3];
-const SKILL_ICONS: IconName[] = ['heartPulse', 'clipboard', 'hand', 'activity', 'shield', 'users', 'flask', 'target', 'file', 'bulb'];
+/** "Occupational Psychologist | Workplace Mental Health" → ["Occupational Psychologist", "Workplace Mental Health"] */
+export const splitHeadline = (h: string) => h.split(/\s*[|•·–—]\s*/).filter(Boolean);
 
-const initialsOf = (name: string) =>
-  name
-    .split(/\s+/)
-    .map((w) => w[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase();
+const firstSentence = (t: string) => t.split(/(?<=[.!?])\s/)[0] || t;
 
-function Head({ label, title, id, intro, link, light = false }: { label: string; title: React.ReactNode; id: string; intro?: string; link?: { href?: string; text: string; onClick?: () => void }; light?: boolean }) {
+/* =============================== main column =============================== */
+
+/** Photo banner: desk by a sunny window, the motto handwritten on the glass, morning sun coming up. */
+export function Banner({ resume, isExample, onUpload }: { resume: Resume; isExample: boolean; onUpload: () => void }) {
+  const [role, focus] = splitHeadline(resume.headline);
+  const motto = (resume.motto || 'Healthy mind. Productive work.').replace(/[.!]/g, '').split(/\s+/).slice(0, 5);
   return (
-    <div className={`head ${light ? 'head--light' : ''}`}>
-      <div>
-        <span className="label">{label}</span>
-        <h2 id={id} className="title">
-          {title}
-        </h2>
-        {intro && <p className="head__intro">{intro}</p>}
+    <section id="home" className="banner" aria-label="Introduction">
+      <div className="banner__art" aria-hidden>
+        <img src={desk} alt="" />
+        <span className="banner__sun" />
+        <span className="banner__rays" />
+        <p className="banner__note">
+          {motto.map((w, i) => (
+            <span key={i} style={{ ['--i' as string]: i }}>
+              {w}
+            </span>
+          ))}
+          <Icon name="heart" size={22} className="banner__heart" />
+        </p>
       </div>
-      {link &&
-        (link.onClick ? (
-          <button className="head__link" onClick={link.onClick}>
-            {link.text} <Icon name="arrowRight" size={14} />
+      <div className="banner__copy">
+        <p className="label">{focus || 'Portfolio'}</p>
+        <h1 className="banner__title" data-search>
+          {resume.name}
+          <span>{role || resume.headline}</span>
+        </h1>
+        <p className="banner__intro" data-search>
+          {resume.summary ? firstSentence(resume.summary) : resume.tagline}
+        </p>
+        {isExample ? (
+          <button className="pill pill--sm" onClick={onUpload}>
+            Upload your CV <Icon name="arrowRight" size={14} />
           </button>
         ) : (
-          <a className="head__link" href={link.href}>
-            {link.text} <Icon name="arrowRight" size={14} />
+          <a className="pill pill--sm" href="#experience">
+            View my journey <Icon name="arrowRight" size={14} />
           </a>
-        ))}
-    </div>
-  );
-}
-
-/* ================= about: checklist + reception photo with the name on the wall ================= */
-
-function Badge({ years, plus }: { years: number; plus: boolean }) {
-  const [ref, inView] = useInView<HTMLDivElement>(0.5);
-  const n = useCountUp(years, inView, { duration: 2000 });
-  return (
-    <div className="about__badge" ref={ref}>
-      <span className="about__badge-icon">
-        <Icon name="users" size={18} />
-      </span>
-      <span>
-        <small>Experience</small>
-        <b>
-          {Math.round(n)}
-          {plus ? '+' : ''} years
-        </b>
-      </span>
-    </div>
-  );
-}
-
-export function AboutSection({ resume, onDownloadCv, isExample }: { resume: Resume; onDownloadCv: () => void; isExample: boolean }) {
-  const [role, focus] = splitHeadline(resume.headline);
-  const edu = resume.education[0];
-  const points = [
-    `${resume.stats.years}${resume.stats.yearsPlus ? '+' : ''} years of hands-on experience`,
-    edu?.degree,
-    resume.certifications[0],
-    resume.skills.slice(0, 3).join(', '),
-  ].filter(Boolean) as string[];
-
-  return (
-    <section id="about" className="section" aria-labelledby="about-title">
-      <div className="wrap about">
-        <Reveal className="about__copy">
-          <span className="label">About me</span>
-          <h2 id="about-title" className="title">
-            Modern Care
-            <br />
-            For a <span className="accent">Healthier</span> You
-          </h2>
-          <p data-search>{resume.summary || resume.tagline}</p>
-          <ul className="checks">
-            {points.map((p, i) => (
-              <Reveal as="li" key={p} delay={120 + i * 90} data-search>
-                <Icon name="check" size={13} /> {p}
-              </Reveal>
-            ))}
-          </ul>
-          <div className="about__actions">
-            <a className="pill pill--sm" href="#experience">
-              Learn more <Icon name="arrowRight" size={14} />
-            </a>
-            <button className="pill pill--sm pill--ghost" onClick={onDownloadCv}>
-              <Icon name="download" size={14} /> {isExample ? 'Sample CV' : 'Download CV'}
-            </button>
-          </div>
-        </Reveal>
-
-        <Reveal className="about__visual" delay={150}>
-          <span className="about__wash" aria-hidden />
-          <div className="about__photo">
-            <img src={clinic} alt="" loading="lazy" />
-            {/* the candidate's name mounted on the reception wall, where the clinic sign was */}
-            <div className="about__sign" aria-hidden>
-              <Logo size={30} />
-              <span>
-                <b>{resume.name}</b>
-                <small>{focus || role}</small>
-              </span>
-            </div>
-          </div>
-          <Badge years={resume.stats.years} plus={resume.stats.yearsPlus} />
-        </Reveal>
-      </div>
-    </section>
-  );
-}
-
-/* ================= experience band: roles in a phone mock-up ================= */
-
-export function JourneyBand({ resume }: { resume: Resume }) {
-  const reduced = useReducedMotion();
-  const roles = resume.experience.slice(0, 4);
-  const [active, setActive] = useState(0);
-  const [paused, setPaused] = useState(false);
-
-  useEffect(() => {
-    if (reduced || paused || roles.length < 2) return;
-    const t = window.setInterval(() => setActive((a) => (a + 1) % roles.length), 3000);
-    return () => clearInterval(t);
-  }, [reduced, paused, roles.length]);
-
-  const role = roles[active];
-  const perks: { icon: IconName; title: string; text: string }[] = [
-    { icon: 'calendar', title: role?.period || 'Timeline', text: [role?.company, role?.location].filter(Boolean).join(' · ') || 'Organisation' },
-    { icon: 'chat', title: resume.goals[1]?.label || 'Next step', text: resume.goals[1]?.value || resume.goals[0]?.value || 'Always learning' },
-    { icon: 'headset', title: 'Open to new roles', text: resume.location ? `${resume.location} or remote` : 'On-site or remote' },
-  ];
-
-  return (
-    <section id="experience" className="journey" aria-labelledby="journey-title" onPointerEnter={() => setPaused(true)} onPointerLeave={() => setPaused(false)}>
-      <div className="wrap journey__grid">
-        <Reveal className="journey__copy">
-          <span className="label journey__label">Experience</span>
-          <h2 id="journey-title" className="journey__title">
-            My Career
-            <br />
-            Journey
-          </h2>
-          <p>Each role built on the last. Tap a role on the phone to see what it involved.</p>
-          {role && role.bullets.length > 0 && (
-            <ul className="journey__bullets" key={active} data-search>
-              {role.bullets.slice(0, 3).map((b, i) => (
-                <li key={i}>{b}</li>
-              ))}
-            </ul>
-          )}
-        </Reveal>
-
-        <div className="phone" aria-label="Roles">
-          <div className="phone__screen">
-            <span className="phone__notch" aria-hidden />
-            <p className="phone__title">My Roles</p>
-            <p className="phone__sub">{roles.length} positions</p>
-            <ol className="phone__list">
-              {roles.map((r, i) => (
-                <li key={r.role + i}>
-                  <button className={i === active ? 'is-on' : ''} onClick={() => setActive(i)} data-search>
-                    <span className="phone__date">{r.period?.split(/\s*[–-]\s*/)[0] || '—'}</span>
-                    <span>
-                      <b>{r.role}</b>
-                      <small>{r.company}</small>
-                    </span>
-                  </button>
-                </li>
-              ))}
-              {!roles.length && <li className="phone__empty">No experience section was found in the CV.</li>}
-            </ol>
-            <a className="phone__btn" href="#contact">
-              Get in touch
-            </a>
-          </div>
-        </div>
-
-        <ul className="journey__perks">
-          {perks.map((p, i) => (
-            <Reveal as="li" key={p.title + i} delay={i * 110}>
-              <span className="journey__icon">
-                <Icon name={p.icon} size={20} />
-              </span>
-              <span>
-                <b>{p.title}</b>
-                <small>{p.text}</small>
-              </span>
-            </Reveal>
-          ))}
-        </ul>
-      </div>
-    </section>
-  );
-}
-
-/* ================= achievements ("What our patients say") ================= */
-
-export function ResultsSection({ resume }: { resume: Resume }) {
-  const items = [...resume.achievements.map((t) => ({ text: t, kind: 'Achievement' })), ...resume.certifications.map((t) => ({ text: t, kind: 'Certification' }))];
-  const [start, setStart] = useState(0);
-  const [ref, inView] = useInView<HTMLDivElement>(0.3);
-  const shown = items.length <= 3 ? items : [0, 1, 2].map((k) => items[(start + k) % items.length]);
-  const initials = initialsOf(resume.name);
-  const pages = Math.max(1, items.length - 2);
-
-  return (
-    <section className="section" aria-labelledby="results-title">
-      <div className="wrap">
-        <Head label="Achievements" id="results-title" title="Milestones & Credentials" />
-        <div className={`results ${inView ? 'is-on' : ''}`} ref={ref}>
-          {shown.map((it, i) => (
-            <Reveal key={it.text} delay={i * 110}>
-              <GlowCard className={`quote ${i === 1 ? 'quote--green' : ''}`} accent={i === 1 ? 'amber' : 'green'} phase={i * 0.3} speed={8} data-search>
-                <span className="quote__top">
-                  <span className="quote__avatar">{initials}</span>
-                  <Icon name="quote" size={22} className="quote__mark" />
-                </span>
-                <p>{it.text}</p>
-                <footer>
-                  <span>
-                    <b>{resume.name}</b>
-                    <small>{it.kind}</small>
-                  </span>
-                  <span className="stars" aria-hidden>
-                    {[0, 1, 2, 3, 4].map((s) => (
-                      <Icon key={s} name="star" size={13} style={{ ['--s' as string]: s }} />
-                    ))}
-                  </span>
-                </footer>
-              </GlowCard>
-            </Reveal>
-          ))}
-          {!items.length && <p className="empty">Add Achievements or Certifications to the CV to show them here.</p>}
-        </div>
-        {items.length > 3 && (
-          <div className="pager">
-            <button aria-label="Previous" onClick={() => setStart((s) => (s - 1 + items.length) % items.length)}>
-              <Icon name="chevronLeft" size={16} />
-            </button>
-            {Array.from({ length: pages }).map((_, k) => (
-              <i key={k} className={k === start % pages ? 'is-on' : ''} />
-            ))}
-            <button aria-label="Next" onClick={() => setStart((s) => (s + 1) % items.length)}>
-              <Icon name="chevronRight" size={16} />
-            </button>
-          </div>
         )}
       </div>
     </section>
   );
 }
 
-/* ================= skills: dark header with the stethoscope photo + grid ================= */
+const SKILL_ICONS: IconName[] = ['lotus', 'smile', 'brain', 'target', 'heart', 'breeze', 'shield', 'activity', 'clipboard', 'bulb'];
+const SKILL_TINTS = ['mint', 'lilac', 'mint', 'mint', 'lilac'];
 
-export function SkillsSection({ resume }: { resume: Resume }) {
+/** Five skill tiles under the banner ("Stress management, Anxiety support…"). */
+export function SkillStrip({ resume }: { resume: Resume }) {
   const [all, setAll] = useState(false);
-  const skills = all ? resume.skills : resume.skills.slice(0, 6);
+  const skills = all ? resume.skills : resume.skills.slice(0, 5);
   const notes = [...resume.interests, ...resume.certifications];
   return (
-    <section id="skills" className="section" aria-labelledby="skills-title">
-      <div className="wrap">
-        <div className="skills__hero">
-          <img src={care} alt="" loading="lazy" />
-          <div>
-            <span className="label skills__label">My skills</span>
-            <h2 id="skills-title" className="skills__title">
-              Comprehensive Care
-              <br />
-              Under One Roof
-            </h2>
-            <p>{resume.tagline}</p>
-            {resume.skills.length > 6 && (
-              <button className="pill pill--sm pill--white" onClick={() => setAll((a) => !a)}>
-                {all ? 'Show fewer' : `View all ${resume.skills.length} skills`} <Icon name="arrowRight" size={14} />
-              </button>
-            )}
-          </div>
-        </div>
-        <ul className="skills">
-          {skills.map((s, i) => (
-            <Reveal as="li" key={s} delay={(i % 6) * 70}>
-              <GlowCard className="skill" accent={(['green', 'teal', 'amber'] as Accent[])[i % 3]} phase={i * 0.14} speed={6 + (i % 4)} data-search>
-                <span className="skill__icon">
-                  <Icon name={SKILL_ICONS[i % SKILL_ICONS.length]} size={19} />
-                </span>
-                <b>{s}</b>
-                <small>{notes[i % Math.max(notes.length, 1)] || 'Core skill'}</small>
-              </GlowCard>
-            </Reveal>
-          ))}
-        </ul>
-      </div>
-    </section>
-  );
-}
-
-/* ================= current role spotlight ("Expert doctors") ================= */
-
-export function Spotlight({ resume }: { resume: Resume }) {
-  const current = resume.experience[0];
-  if (!current) return null;
-  return (
-    <section className="section" aria-labelledby="spot-title">
-      <div className="wrap">
-        <div className="spot">
-          <Reveal className="spot__copy">
-            <span className="label">Where I work now</span>
-            <h2 id="spot-title" className="title" data-search>
-              {current.role}.
-              <br />
-              <span className="accent">Personalized Care.</span>
-            </h2>
-            <p data-search>{current.bullets[0] || resume.tagline}</p>
-            <a className="pill pill--sm" href="#experience">
-              See my journey <Icon name="arrowRight" size={14} />
-            </a>
-          </Reveal>
-          <div className="spot__visual">
-            <img src={mentor} alt="" loading="lazy" />
-            <div className="spot__card">
-              <span className="spot__avatar">{initialsOf(current.company || resume.name)}</span>
-              <span>
-                <b>{current.company}</b>
-                <small>{current.period}</small>
+    <section id="skills" className="panel strip" aria-label="Skills">
+      <ul>
+        {skills.map((s, i) => (
+          <Reveal as="li" key={s} delay={(i % 5) * 80}>
+            <GlowCard className="tile" accent={(['green', 'purple', 'teal'] as Accent[])[i % 3]} phase={i * 0.2} speed={6 + (i % 4)} data-search>
+              <span className={`tile__icon tile__icon--${SKILL_TINTS[i % SKILL_TINTS.length]}`}>
+                <Icon name={SKILL_ICONS[i % SKILL_ICONS.length]} size={24} />
               </span>
-            </div>
-          </div>
-        </div>
-      </div>
+              <b>{s}</b>
+              <small>{notes[i % Math.max(notes.length, 1)] || 'Core skill'}</small>
+            </GlowCard>
+          </Reveal>
+        ))}
+      </ul>
+      {resume.skills.length > 5 && (
+        <button className="strip__more" onClick={() => setAll((a) => !a)}>
+          {all ? 'Show fewer skills' : `Show all ${resume.skills.length} skills`} <Icon name={all ? 'chevronDown' : 'arrowRight'} size={13} />
+        </button>
+      )}
     </section>
   );
 }
 
-/* ================= numbers band ================= */
-
-function Count({ icon, value, suffix = '', label, run, delay }: { icon: IconName; value: number; suffix?: string; label: string; run: boolean; delay: number }) {
-  const n = useCountUp(value, run, { duration: 2200, delay });
+/** "Our approach": summary, checklist, notebook photo. */
+export function Approach({ resume, isExample, onDownloadCv }: { resume: Resume; isExample: boolean; onDownloadCv: () => void }) {
+  const points = [...resume.certifications, ...resume.education.map((e) => e.degree), ...resume.skills.slice(0, 2)].slice(0, 4);
   return (
-    <li className="count">
-      <span className="count__icon">
-        <Icon name={icon} size={20} />
-      </span>
-      <b aria-label={`${value}${suffix}`}>
-        <span aria-hidden>
-          {Math.round(n)}
-          {suffix && <i className={n >= value * 0.98 ? 'is-on' : ''}>{suffix}</i>}
-        </span>
-      </b>
-      <small>{label}</small>
-    </li>
-  );
-}
-
-export function NumbersBand({ resume }: { resume: Resume }) {
-  const [ref, inView] = useInView<HTMLElement>(0.4);
-  const { stats } = resume;
-  return (
-    <section className="numbers" ref={ref} aria-labelledby="numbers-title">
-      <div className="wrap numbers__grid">
-        <div>
-          <span className="label numbers__label">My impact</span>
-          <h2 id="numbers-title" className="numbers__title">
-            Trusted Care
-            <br />
-            By The Numbers
-          </h2>
-        </div>
-        <ul>
-          <Count icon="folder" value={stats.projects} suffix={stats.projectsPlus ? '+' : ''} label="Projects Delivered" run={inView} delay={0} />
-          <Count icon="activity" value={stats.skills} suffix="+" label="Core Skills" run={inView} delay={150} />
-          <Count icon="award" value={stats.years} suffix={stats.yearsPlus ? '+' : ''} label="Years of Care" run={inView} delay={300} />
-          <Count icon="trophy" value={resume.achievements.length + resume.certifications.length} label="Awards & Certifications" run={inView} delay={450} />
-        </ul>
-      </div>
-    </section>
-  );
-}
-
-/* ================= projects ("Health tips & articles") ================= */
-
-export function ProjectsSection({ resume }: { resume: Resume }) {
-  const [all, setAll] = useState(false);
-  const projects = all ? resume.projects : resume.projects.slice(0, 3);
-  return (
-    <section id="projects" className="section" aria-labelledby="projects-title">
-      <div className="wrap">
-        <Head
-          label="My projects"
-          id="projects-title"
-          title="Projects & Programmes"
-          intro="Work I designed, led or delivered — and what changed because of it."
-          link={resume.projects.length > 3 ? { text: all ? 'Show fewer' : `View all ${resume.projects.length} projects`, onClick: () => setAll((a) => !a) } : undefined}
-        />
-        <div className="posts">
-          {projects.map((p, i) => (
-            <Reveal key={p.title + i} delay={(i % 3) * 110}>
-              <GlowCard className="post" accent={i % 2 ? 'amber' : 'green'} phase={i * 0.25} speed={7 + (i % 3)}>
-                <div className="post__photo">
-                  <img src={PROJECT_PHOTOS[i % PROJECT_PHOTOS.length]} alt="" loading="lazy" />
-                </div>
-                <div className="post__body" data-search>
-                  {p.meta && <small className="post__meta">{p.meta}</small>}
-                  <h3>{p.title}</h3>
-                  {p.description && <p>{p.description}</p>}
-                  {p.tags.length > 0 && (
-                    <span className="post__tags">
-                      {p.tags.slice(0, 3).map((t) => (
-                        <i key={t}>{t}</i>
-                      ))}
-                    </span>
-                  )}
-                </div>
-              </GlowCard>
+    <section id="about" className="panel approach" aria-labelledby="approach-title">
+      <Reveal className="approach__copy">
+        <span className="label">My approach</span>
+        <h2 id="approach-title" className="title">
+          Personalised Support,
+          <br />
+          Built on Evidence
+        </h2>
+        <p data-search>{resume.summary || resume.tagline}</p>
+        <ul className="checks">
+          {points.map((p, i) => (
+            <Reveal as="li" key={p} delay={150 + i * 90} data-search>
+              <Icon name="check" size={12} /> {p}
             </Reveal>
           ))}
-          {!projects.length && <p className="empty">No projects were found in the CV.</p>}
-        </div>
+        </ul>
+        <button className="pill pill--sm" onClick={onDownloadCv}>
+          {isExample ? 'Sample CV' : 'Download CV'} <Icon name="download" size={14} />
+        </button>
+      </Reveal>
+      <div className="approach__photo" aria-hidden>
+        <img src={notebook} alt="" loading="lazy" />
+        <p className="approach__note">
+          <span>Small</span>
+          <span>steps</span>
+          <span>Big</span>
+          <span>changes</span>
+        </p>
       </div>
     </section>
   );
 }
 
-/* ================= mission band (goal) with a heartbeat line drawing itself ================= */
+const PROJECT_ICONS: IconName[] = ['breeze', 'lotus', 'brain', 'heart', 'shield', 'target'];
 
-export function MissionBand({ resume }: { resume: Resume }) {
-  const [ref, inView] = useInView<HTMLElement>(0.4);
+/** Dark band with a mountain and a flag ("Daily tools") — the projects. */
+export function ProjectsBand({ resume }: { resume: Resume }) {
+  const [open, setOpen] = useState(0);
+  const projects = resume.projects.slice(0, 4);
+  const current = projects[open];
+  return (
+    <section id="projects" className="tools" aria-labelledby="tools-title">
+      <svg className="tools__mountain" viewBox="0 0 320 180" preserveAspectRatio="xMaxYMax slice" aria-hidden>
+        <path d="M0 180 L90 110 L130 130 L200 40 L240 80 L262 62 L320 120 V180Z" fill="#2c7d72" opacity="0.55" />
+        <path d="M60 180 L150 95 L190 120 L235 70 L320 150 V180Z" fill="#3f9a8c" opacity="0.6" />
+        <path d="M200 40 L214 58 L206 56 L200 64 L192 54Z" fill="#cfece4" opacity="0.8" />
+        <line x1="200" y1="40" x2="200" y2="12" stroke="#cfece4" strokeWidth="2" />
+        <path className="tools__flag" d="M200 12 L222 18 L200 25Z" fill="#cfece4" />
+      </svg>
+      <div className="tools__copy">
+        <span className="label tools__label">My projects</span>
+        <h2 id="tools-title" className="tools__title">
+          Programmes That Make a Difference
+        </h2>
+        <p data-search key={open}>
+          {current ? current.description || current.meta : resume.tagline}
+        </p>
+        {current?.tags.length ? (
+          <span className="tools__tags">
+            {current.tags.slice(0, 3).map((t) => (
+              <i key={t}>{t}</i>
+            ))}
+          </span>
+        ) : null}
+      </div>
+      <ul className="tools__list" role="tablist" aria-label="Projects">
+        {projects.map((p, i) => (
+          <li key={p.title}>
+            <button role="tab" aria-selected={open === i} className={open === i ? 'is-on' : ''} onClick={() => setOpen(i)} onPointerEnter={() => setOpen(i)} data-search>
+              <span className="tools__icon">
+                <Icon name={PROJECT_ICONS[i % PROJECT_ICONS.length]} size={20} />
+              </span>
+              {p.title}
+            </button>
+          </li>
+        ))}
+        {!projects.length && <li className="tools__empty">No projects were found in the CV.</li>}
+      </ul>
+    </section>
+  );
+}
+
+/** Sunrise photo with the motto as a quote, plus the "you are not alone" style contact card. */
+export function QuoteRow({ resume }: { resume: Resume }) {
+  const [ref, inView] = useInView<HTMLDivElement>(0.3);
   const goal = resume.goals[0];
   return (
-    <section className={`mission ${inView ? 'is-on' : ''}`} ref={ref} aria-labelledby="mission-title">
-      <svg className="mission__line" viewBox="0 0 600 160" preserveAspectRatio="none" aria-hidden>
-        <path d="M0 110 H180 L200 110 L215 70 L232 140 L250 40 L268 120 L282 110 H360 C380 110 395 70 430 70 C470 70 470 120 500 100 C540 70 520 30 490 40 C470 47 470 75 490 90 C520 110 560 110 600 110" />
-      </svg>
-      <div className="wrap mission__inner">
-        <span className="label numbers__label">
-          <Icon name="heart" size={13} /> {goal?.label || 'Mission'}
-        </span>
-        <h2 id="mission-title" className="mission__title" data-search>
-          {goal ? goal.value : 'Your Health Is My Mission'}
-        </h2>
-        <p>{goal?.note ? `Target: ${goal.note}.` : resume.tagline}</p>
-        <a className="pill pill--sm pill--white" href={resume.email ? `mailto:${resume.email}` : '#contact'}>
-          Talk to me <Icon name="arrowRight" size={14} />
+    <div className="panel quoterow" ref={ref}>
+      <div className={`quote ${inView ? 'is-up' : ''}`}>
+        <img src={coast} alt="" loading="lazy" />
+        <span className="quote__sun" aria-hidden />
+        <blockquote data-search>
+          <Icon name="quote" size={22} />
+          <p>{resume.tagline || resume.motto}</p>
+          <i />
+        </blockquote>
+      </div>
+      <div id="contact" className="reachout">
+        <h2 className="reachout__title">Let’s Work Together</h2>
+        <p data-search>{goal ? `Next up: ${goal.value.charAt(0).toLowerCase()}${goal.value.slice(1)}${goal.note ? ` (${goal.note})` : ''}.` : 'Open to new roles, collaborations and referrals.'}</p>
+        <ul className="reachout__list">
+          {resume.email && (
+            <li>
+              <Icon name="mail" size={14} /> <a href={`mailto:${resume.email}`}>{resume.email}</a>
+            </li>
+          )}
+          {resume.phone && (
+            <li>
+              <Icon name="phone" size={14} /> {resume.phone}
+            </li>
+          )}
+          {resume.location && (
+            <li>
+              <Icon name="pin" size={14} /> {resume.location}
+            </li>
+          )}
+        </ul>
+        <a className="pill pill--sm" href={resume.email ? `mailto:${resume.email}` : '#home'}>
+          Get in touch <Icon name="arrowRight" size={14} />
         </a>
       </div>
-    </section>
+    </div>
   );
 }
 
-/* ================= call to action with the family photo ================= */
+/* =============================== sidebar =============================== */
 
-export function CallToAction({ resume }: { resume: Resume }) {
+/** "Your mental wellness matters" card: the profile at a glance, with the years counting up. */
+export function WelcomeCard({ resume }: { resume: Resume }) {
+  const [ref, inView] = useInView<HTMLDivElement>(0.4);
+  const n = useCountUp(resume.stats.years, inView, { duration: 2200 });
+  const [role] = splitHeadline(resume.headline);
   return (
-    <section id="contact" className="section" aria-labelledby="cta-title">
-      <div className="wrap">
-        <div className="cta">
-          <img className="cta__photo" src={family} alt="" loading="lazy" />
-          <div className="cta__copy">
-            <span className="label">Let’s work together</span>
-            <h2 id="cta-title" className="title">
-              Take the First Step
-              <br />
-              Towards a Healthier Team
-            </h2>
-            <p>Get in touch about roles, collaborations or referrals — I usually reply within a day.</p>
-            <div className="cta__actions">
-              <a className="pill pill--sm" href={resume.email ? `mailto:${resume.email}` : '#home'}>
-                Email me <Icon name="arrowRight" size={14} />
-              </a>
-              {resume.phone && (
-                <a className="pill pill--sm pill--ghost" href={`tel:${resume.phone.replace(/[^\d+]/g, '')}`}>
-                  <Icon name="phone" size={14} /> {resume.phone}
-                </a>
-              )}
-            </div>
-          </div>
-          <p className="cta__note" aria-hidden>
-            <span>Healthy</span>
-            <span>Teams</span>
-            <span>Stronger</span>
-            <span>Communities</span>
-          </p>
-        </div>
+    <div className="panel welcome" ref={ref}>
+      <span className="welcome__badge" aria-hidden>
+        <Logo size={64} />
+      </span>
+      <div>
+        <h2 className="welcome__title" data-search>
+          {role || 'Your role'}
+        </h2>
+        <p className="welcome__years">
+          <b>
+            {Math.round(n)}
+            {resume.stats.yearsPlus && <i className={n >= resume.stats.years * 0.98 ? 'is-on' : ''}>+</i>}
+          </b>
+          years of experience helping people at work
+        </p>
+        <a className="pill pill--sm" href={resume.email ? `mailto:${resume.email}` : '#contact'}>
+          Book a conversation <Icon name="arrowRight" size={14} />
+        </a>
       </div>
+    </div>
+  );
+}
+
+function QuickTile({ icon, tint, value, suffix = '', label, sub, run, delay, href }: { icon: IconName; tint: string; value: number | string; suffix?: string; label: string; sub: string; run: boolean; delay: number; href: string }) {
+  const numeric = typeof value === 'number';
+  const n = useCountUp(numeric ? value : 0, run, { duration: 2000, delay });
+  const text = useScramble(numeric ? '' : value, run && !numeric, { delay });
+  return (
+    <a href={href} className={`quick__tile quick__tile--${tint}`} data-search>
+      <span className="quick__icon">
+        <Icon name={icon} size={18} />
+      </span>
+      <b>
+        {numeric ? Math.round(n) : text || ' '}
+        {suffix}
+      </b>
+      <span className="quick__label">{label}</span>
+      <small>{sub}</small>
+    </a>
+  );
+}
+
+/** "Quick access" — four tiles that count / decode. */
+export function QuickAccess({ resume }: { resume: Resume }) {
+  const [ref, inView] = useInView<HTMLDivElement>(0.3);
+  const { stats } = resume;
+  const edu = resume.education[0];
+  return (
+    <div className="panel quick" ref={ref}>
+      <h2 className="side-title">At a Glance</h2>
+      <div className="quick__grid">
+        <QuickTile icon="folder" tint="mint" value={stats.projects} suffix={stats.projectsPlus ? '+' : ''} label="Projects" sub="Programmes delivered" run={inView} delay={0} href="#projects" />
+        <QuickTile icon="graduation" tint="lilac" value={edu?.short || '—'} label="Education" sub={edu?.field || 'Degree'} run={inView} delay={150} href="#about" />
+        <QuickTile icon="activity" tint="lilac" value={stats.skills} suffix="+" label="Core skills" sub="Therapy & coaching" run={inView} delay={300} href="#skills" />
+        <QuickTile icon="pin" tint="mint" value={resume.location?.split(',')[0] || '—'} label="Based in" sub="On-site or remote" run={inView} delay={450} href="#contact" />
+      </div>
+    </div>
+  );
+}
+
+/** "How it works" — the career, as numbered steps; the highlight walks from step to step. */
+export function Steps({ resume }: { resume: Resume }) {
+  const reduced = useReducedMotion();
+  const roles = resume.experience.slice(0, 4);
+  const [active, setActive] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (reduced || paused || roles.length < 2) return;
+    const t = window.setInterval(() => setActive((a) => (a + 1) % roles.length), 2800);
+    return () => clearInterval(t);
+  }, [reduced, paused, roles.length]);
+
+  return (
+    <section id="experience" className="panel steps" aria-labelledby="steps-title" onPointerEnter={() => setPaused(true)} onPointerLeave={() => setPaused(false)}>
+      <div className="side-head">
+        <h2 id="steps-title" className="side-title">
+          My Experience
+        </h2>
+        <button className="side-link" onClick={() => setOpen((o) => !o)}>
+          {open ? 'Hide details' : 'View details'} <Icon name="arrowRight" size={13} />
+        </button>
+      </div>
+      <ol>
+        {roles.map((r, i) => (
+          <li key={r.role + i} className={i === active ? 'is-on' : ''} onPointerEnter={() => setActive(i)} data-search>
+            <span className="steps__no">{i + 1}</span>
+            <span>
+              <b>{r.role}</b>
+              <small>{[r.company, r.period].filter(Boolean).join(' · ')}</small>
+              {(open || i === active) && r.bullets[0] && <em>{r.bullets[0]}</em>}
+            </span>
+          </li>
+        ))}
+        {!roles.length && <li className="empty">No experience section was found in the CV.</li>}
+      </ol>
     </section>
   );
 }
 
-/* ================= footer ================= */
+const RESOURCE_PHOTOS = [article, podcast, guide];
+
+/** "Wellbeing resources" — achievements and certifications as three photo cards. */
+export function Highlights({ resume }: { resume: Resume }) {
+  const [all, setAll] = useState(false);
+  const items = [...resume.achievements.map((t) => ({ text: t, kind: 'Achievement' })), ...resume.certifications.map((t) => ({ text: t, kind: 'Certification' }))];
+  const shown = all ? items : items.slice(0, 3);
+  return (
+    <div className="panel res">
+      <div className="side-head">
+        <h2 className="side-title">Highlights</h2>
+        {items.length > 3 && (
+          <button className="side-link" onClick={() => setAll((a) => !a)}>
+            {all ? 'Show less' : 'View all'} <Icon name="arrowRight" size={13} />
+          </button>
+        )}
+      </div>
+      <div className="res__grid">
+        {shown.map((it, i) => (
+          <GlowCard key={it.text} className="res__card" accent={i % 2 ? 'purple' : 'green'} phase={i * 0.3} speed={7 + i} data-search>
+            <div className="res__photo">
+              <img src={RESOURCE_PHOTOS[i % RESOURCE_PHOTOS.length]} alt="" loading="lazy" />
+            </div>
+            <b>{it.kind}</b>
+            <small>{it.text}</small>
+          </GlowCard>
+        ))}
+        {!items.length && <p className="empty">Add Achievements or Certifications to the CV to show them here.</p>}
+      </div>
+    </div>
+  );
+}
+
+/** Dark closing card with a sprig that grows in. */
+export function MissionCard({ resume }: { resume: Resume }) {
+  const [ref, inView] = useInView<HTMLDivElement>(0.4);
+  const goal = resume.goals[1] || resume.goals[0];
+  return (
+    <div className={`mission ${inView ? 'is-on' : ''}`} ref={ref}>
+      <svg className="mission__sprig" viewBox="0 0 120 150" aria-hidden>
+        <path className="mission__stem" d="M40 148 C 46 110, 60 80, 92 30" />
+        <path className="mission__leaf" style={{ ['--d' as string]: '0.6s' }} d="M52 104 C 30 100, 18 84, 20 66 C 38 70, 50 84, 52 104Z" />
+        <path className="mission__leaf" style={{ ['--d' as string]: '0.9s' }} d="M62 80 C 70 60, 88 54, 104 58 C 98 76, 82 84, 62 80Z" />
+        <path className="mission__leaf" style={{ ['--d' as string]: '1.2s' }} d="M70 64 C 52 54, 48 36, 56 20 C 70 30, 74 48, 70 64Z" />
+        <path className="mission__leaf" style={{ ['--d' as string]: '1.5s' }} d="M86 40 C 92 24, 104 16, 118 18 C 114 32, 102 40, 86 40Z" />
+      </svg>
+      <h2 className="mission__title">
+        Better Mental Health.
+        <br />
+        Better Work.
+      </h2>
+      <p data-search>{goal ? `${goal.label}: ${goal.value}` : 'Feel supported. Perform better. Live fuller.'}</p>
+      <a className="pill pill--sm pill--white" href={resume.email ? `mailto:${resume.email}` : '#contact'}>
+        Start today <Icon name="arrowRight" size={14} />
+      </a>
+    </div>
+  );
+}
+
+/* =============================== footer =============================== */
 
 export function Footer({ resume }: { resume: Resume }) {
   const [role] = splitHeadline(resume.headline);
   return (
     <footer className="footer">
-      <div className="wrap footer__grid">
-        <div className="footer__brand">
-          <span className="footer__logo">
-            <Logo size={32} />
+      <div className="wrap footer__inner">
+        <span className="footer__brand">
+          <Logo size={32} />
+          <span>
             <b className="wordmark">{resume.name}</b>
+            <small>{role}</small>
           </span>
-          <p>{role}</p>
-          <p className="footer__motto">{resume.motto || resume.tagline}</p>
-        </div>
-        <div>
-          <h4>Quick links</h4>
-          <ul>
-            {NAV.map((n) => (
-              <li key={n.id}>
-                <a href={`#${n.id}`}>{n.label}</a>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div>
-          <h4>Skills</h4>
-          <ul>
-            {resume.skills.slice(0, 6).map((s) => (
-              <li key={s}>
-                <a href="#skills">{s}</a>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div>
-          <h4>Contact</h4>
-          <ul className="footer__contact">
-            {resume.phone && (
-              <li>
-                <Icon name="phone" size={14} /> {resume.phone}
-              </li>
-            )}
-            {resume.email && (
-              <li>
-                <Icon name="mail" size={14} /> <a href={`mailto:${resume.email}`}>{resume.email}</a>
-              </li>
-            )}
-            {resume.location && (
-              <li>
-                <Icon name="pin" size={14} /> {resume.location}
-              </li>
-            )}
-          </ul>
-          <nav className="footer__social" aria-label="Profiles">
-            {resume.links.linkedin && (
-              <a href={resume.links.linkedin} target="_blank" rel="noreferrer" aria-label="LinkedIn">
-                <Icon name="linkedin" size={16} />
-              </a>
-            )}
-            {resume.links.github && (
-              <a href={resume.links.github} target="_blank" rel="noreferrer" aria-label="GitHub">
-                <Icon name="github" size={16} />
-              </a>
-            )}
-            {resume.email && (
-              <a href={`mailto:${resume.email}`} aria-label="Email">
-                <Icon name="mail" size={16} />
-              </a>
-            )}
-          </nav>
-        </div>
-      </div>
-      <div className="wrap footer__base">
-        <span>
-          © {new Date().getFullYear()} {resume.name}. Built from a CV.
         </span>
-        <a href="#home">Back to top ↑</a>
+        <nav className="footer__nav" aria-label="Footer">
+          {NAV.map((n) => (
+            <a key={n.id} href={`#${n.id}`}>
+              {n.label}
+            </a>
+          ))}
+        </nav>
+        <nav className="footer__social" aria-label="Profiles">
+          {resume.links.linkedin && (
+            <a href={resume.links.linkedin} target="_blank" rel="noreferrer" aria-label="LinkedIn">
+              <Icon name="linkedin" size={16} />
+            </a>
+          )}
+          {resume.links.github && (
+            <a href={resume.links.github} target="_blank" rel="noreferrer" aria-label="GitHub">
+              <Icon name="github" size={16} />
+            </a>
+          )}
+          {resume.email && (
+            <a href={`mailto:${resume.email}`} aria-label="Email">
+              <Icon name="mail" size={16} />
+            </a>
+          )}
+        </nav>
       </div>
+      <p className="wrap footer__base">
+        © {new Date().getFullYear()} {resume.name}. Built from a CV.
+      </p>
     </footer>
   );
 }

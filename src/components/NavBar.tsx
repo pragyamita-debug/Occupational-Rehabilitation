@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
+import type { Goal } from '../lib/types';
 import { Icon, type IconName } from './Icon';
 import { Logo } from './Logo';
 
 export const NAV = [
   { id: 'home', label: 'Home' },
-  { id: 'about', label: 'About' },
-  { id: 'experience', label: 'Experience' },
   { id: 'skills', label: 'Skills' },
+  { id: 'about', label: 'Approach' },
   { id: 'projects', label: 'Projects' },
+  { id: 'experience', label: 'Experience' },
   { id: 'contact', label: 'Contact' },
 ];
 
@@ -26,7 +27,9 @@ function findInPage(term: string) {
 
 interface Props {
   name: string;
+  tagline: string;
   email?: string;
+  goals: Goal[];
   active: string;
   isExample: boolean;
   onUploadNew: () => void;
@@ -35,8 +38,10 @@ interface Props {
   onReset: () => void;
 }
 
-export function NavBar({ name, email, active, isExample, onUploadNew, onEdit, onDownloadCv, onReset }: Props) {
-  const [menu, setMenu] = useState(false);
+type Pop = 'bell' | 'menu' | null;
+
+export function NavBar({ name, tagline, email, goals, active, isExample, onUploadNew, onEdit, onDownloadCv, onReset }: Props) {
+  const [pop, setPop] = useState<Pop>(null);
   const [mobile, setMobile] = useState(false);
   const [search, setSearch] = useState(false);
   const [term, setTerm] = useState('');
@@ -51,13 +56,13 @@ export function NavBar({ name, email, active, isExample, onUploadNew, onEdit, on
     window.addEventListener('scroll', onScroll, { passive: true });
     const onDown = (e: PointerEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) {
-        setMenu(false);
+        setPop(null);
         setMobile(false);
       }
     };
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        setMenu(false);
+        setPop(null);
         setSearch(false);
       }
     };
@@ -74,6 +79,7 @@ export function NavBar({ name, email, active, isExample, onUploadNew, onEdit, on
     if (search) input.current?.focus();
   }, [search]);
 
+  const toggle = (p: Pop) => setPop((cur) => (cur === p ? null : p));
   const actions: { icon: IconName; label: string; run: () => void }[] = [
     { icon: 'upload', label: isExample ? 'Upload a CV' : 'Upload a new CV', run: onUploadNew },
     { icon: 'edit', label: 'Edit details', run: onEdit },
@@ -86,7 +92,10 @@ export function NavBar({ name, email, active, isExample, onUploadNew, onEdit, on
       <div className="wrap nav__inner">
         <a className="nav__brand" href="#home">
           <Logo />
-          <span className="wordmark">{name}</span>
+          <span className="nav__name">
+            <span className="wordmark">{name}</span>
+            <small>{tagline}</small>
+          </span>
         </a>
 
         <nav className={`nav__links ${mobile ? 'is-open' : ''}`} aria-label="Sections">
@@ -121,22 +130,46 @@ export function NavBar({ name, email, active, isExample, onUploadNew, onEdit, on
               onBlur={() => !term && setSearch(false)}
             />
             <button className="nav__icon" aria-label={search ? 'Search' : 'Open search'} type="submit">
-              <Icon name="search" size={16} />
+              <Icon name="search" size={18} />
             </button>
           </form>
 
           <div className="nav__pop">
-            <button className="nav__icon" aria-label="Dashboard options" aria-haspopup="menu" aria-expanded={menu} onClick={() => setMenu((m) => !m)}>
-              <Icon name="cog" size={16} />
+            <button className="nav__icon nav__bell" aria-label="What’s next" aria-expanded={pop === 'bell'} onClick={() => toggle('bell')}>
+              <Icon name="bell" size={18} />
+              {goals.length > 0 && <i className="nav__dot" />}
             </button>
-            {menu && (
+            {pop === 'bell' && (
+              <div className="popover popover--wide" role="dialog" aria-label="What’s next">
+                <p className="popover__title">What’s next</p>
+                {goals.length ? (
+                  <ul className="popover__list">
+                    {goals.slice(0, 3).map((g) => (
+                      <li key={g.label + g.value}>
+                        <small>{g.label}</small>
+                        {g.value}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="popover__empty">Add a Goals section to the CV to show it here.</p>
+                )}
+              </div>
+            )}
+          </div>
+
+          <div className="nav__pop">
+            <button className="nav__avatar" aria-label="Dashboard options" aria-haspopup="menu" aria-expanded={pop === 'menu'} onClick={() => toggle('menu')}>
+              <Icon name="user" size={19} />
+            </button>
+            {pop === 'menu' && (
               <ul className="popover" role="menu">
                 {actions.map((a) => (
                   <li key={a.label} role="none">
                     <button
                       role="menuitem"
                       onClick={() => {
-                        setMenu(false);
+                        setPop(null);
                         a.run();
                       }}
                     >
@@ -150,15 +183,15 @@ export function NavBar({ name, email, active, isExample, onUploadNew, onEdit, on
 
           {isExample ? (
             <button className="pill pill--sm nav__cta" onClick={onUploadNew}>
-              Upload CV <Icon name="arrowRight" size={14} />
+              Upload CV
             </button>
           ) : (
             <a className="pill pill--sm nav__cta" href={email ? `mailto:${email}` : '#contact'}>
-              Get in touch <Icon name="arrowRight" size={14} />
+              Get in touch
             </a>
           )}
           <button className="nav__icon nav__burger" aria-label="Open menu" aria-expanded={mobile} onClick={() => setMobile((m) => !m)}>
-            <Icon name={mobile ? 'close' : 'menu'} size={16} />
+            <Icon name={mobile ? 'close' : 'menu'} size={17} />
           </button>
         </div>
       </div>
