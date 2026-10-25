@@ -24,7 +24,7 @@ const firstSentence = (t: string) => t.split(/(?<=[.!?])\s/)[0] || t;
 /* =============================== main column =============================== */
 
 /** Photo banner: desk by a sunny window, the motto handwritten on the glass, steam rising from the mug. */
-export function Banner({ resume, isExample, onUpload }: { resume: Resume; isExample: boolean; onUpload: () => void }) {
+export function Banner({ resume }: { resume: Resume }) {
   const [role, focus] = splitHeadline(resume.headline);
   const motto = (resume.motto || 'Healthy mind. Productive work.').replace(/[.!]/g, '').split(/\s+/).slice(0, 5);
   return (
@@ -55,15 +55,9 @@ export function Banner({ resume, isExample, onUpload }: { resume: Resume; isExam
         <p className="banner__intro" data-search>
           {resume.summary ? firstSentence(resume.summary) : resume.tagline}
         </p>
-        {isExample ? (
-          <button className="pill pill--sm" onClick={onUpload}>
-            Upload your CV <Icon name="arrowRight" size={14} />
-          </button>
-        ) : (
-          <a className="pill pill--sm" href="#experience">
-            View my journey <Icon name="arrowRight" size={14} />
-          </a>
-        )}
+        <a className="pill pill--sm" href="#experience">
+          View my journey <Icon name="arrowRight" size={14} />
+        </a>
       </div>
     </section>
   );
@@ -102,7 +96,7 @@ export function SkillStrip({ resume }: { resume: Resume }) {
 }
 
 /** "Our approach": summary, checklist, notebook photo. */
-export function Approach({ resume, isExample, onDownloadCv }: { resume: Resume; isExample: boolean; onDownloadCv: () => void }) {
+export function Approach({ resume }: { resume: Resume }) {
   const points = [...resume.certifications, ...resume.education.map((e) => e.degree), ...resume.skills.slice(0, 2)].slice(0, 4);
   return (
     <section id="about" className="panel approach" aria-labelledby="approach-title">
@@ -121,9 +115,15 @@ export function Approach({ resume, isExample, onDownloadCv }: { resume: Resume; 
             </Reveal>
           ))}
         </ul>
-        <button className="pill pill--sm" onClick={onDownloadCv}>
-          {isExample ? 'Sample CV' : 'Download CV'} <Icon name="download" size={14} />
-        </button>
+        {resume.cvUrl ? (
+          <a className="pill pill--sm" href={resume.cvUrl} download>
+            Download CV <Icon name="download" size={14} />
+          </a>
+        ) : (
+          <a className="pill pill--sm" href="#contact">
+            Get in touch <Icon name="arrowRight" size={14} />
+          </a>
+        )}
       </Reveal>
       <div className="approach__photo" aria-hidden>
         <img src={notebook} alt="" loading="lazy" />
@@ -181,7 +181,7 @@ export function ProjectsBand({ resume }: { resume: Resume }) {
             </button>
           </li>
         ))}
-        {!projects.length && <li className="tools__empty">No projects were found in the CV.</li>}
+        {!projects.length && <li className="tools__empty">Add projects to src/data/profile.ts to show them here.</li>}
       </ul>
     </section>
   );
@@ -332,7 +332,7 @@ export function Steps({ resume }: { resume: Resume }) {
             </span>
           </li>
         ))}
-        {!roles.length && <li className="empty">No experience section was found in the CV.</li>}
+        {!roles.length && <li className="empty">Add roles to src/data/profile.ts to show them here.</li>}
       </ol>
     </section>
   );
@@ -365,7 +365,7 @@ export function Highlights({ resume }: { resume: Resume }) {
             <small>{it.text}</small>
           </GlowCard>
         ))}
-        {!items.length && <p className="empty">Add Achievements or Certifications to the CV to show them here.</p>}
+        {!items.length && <p className="empty">Add achievements or certifications to src/data/profile.ts to show them here.</p>}
       </div>
     </div>
   );
@@ -437,7 +437,7 @@ export function Footer({ resume }: { resume: Resume }) {
         </nav>
       </div>
       <p className="wrap footer__base">
-        © {new Date().getFullYear()} {resume.name}. Built from a CV.
+        © {new Date().getFullYear()} {resume.name}
       </p>
     </footer>
   );

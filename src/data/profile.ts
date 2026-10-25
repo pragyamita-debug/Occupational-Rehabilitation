@@ -1,10 +1,11 @@
 import type { Resume } from '../lib/types';
 
 /**
- * What the page shows before anyone uploads a CV: the full design, filled with
- * neutral placeholder text. Uploading a CV replaces every field below.
+ * Everything the dashboard shows comes from this object.
+ * Replace the placeholder values with real ones and the whole page updates —
+ * no other file needs to change.
  */
-export const placeholder: Resume = {
+export const profile: Resume = {
   name: 'Your Name',
   headline: 'Your Role | Your Specialty',
   tagline: 'One sentence about the work you do and the impact you want it to have.',
@@ -16,7 +17,7 @@ export const placeholder: Resume = {
     github: 'https://github.com/',
   },
   summary:
-    'Two or three sentences about who you are, the problems you like to work on and what you are looking for next. Upload a CV and this is replaced by your own profile.',
+    'Two or three sentences about who you are, the problems you like to work on and what you are looking for next.',
   motto: 'Healthy mind. Productive work.',
 
   experience: [
@@ -25,7 +26,6 @@ export const placeholder: Resume = {
       company: 'Company Name',
       period: '2023 – Present',
       current: true,
-      months: 0,
       bullets: ['What you are responsible for.', 'A result you are proud of.'],
     },
     {
@@ -33,7 +33,6 @@ export const placeholder: Resume = {
       company: 'Company Name',
       period: '2020 – 2023',
       current: false,
-      months: 0,
       bullets: ['What you delivered there.', 'A number that shows the impact.'],
     },
     {
@@ -41,12 +40,11 @@ export const placeholder: Resume = {
       company: 'Company Name',
       period: '2018 – 2020',
       current: false,
-      months: 0,
       bullets: ['Where you started and what you learned.'],
     },
   ],
 
-  education: [{ degree: 'Your Degree in Your Subject', short: 'M.Sc.', field: 'Your Subject', institution: 'Your University', year: '2020', rank: 4 }],
+  education: [{ degree: 'Your Degree in Your Subject', short: 'M.Sc.', field: 'Your Subject', institution: 'Your University', year: '2020' }],
 
   skills: ['Skill One', 'Skill Two', 'Skill Three', 'Skill Four', 'Skill Five', 'Skill Six', 'Skill Seven', 'Skill Eight'],
 
@@ -66,7 +64,6 @@ export const placeholder: Resume = {
   ],
 
   interests: ['Focus Area One', 'Focus Area Two', 'Focus Area Three'],
-  languages: [],
 
   stats: { years: 5, yearsPlus: true, projects: 4, projectsPlus: false, skills: 8 },
 };

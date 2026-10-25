@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Goal } from '../lib/types';
-import { Icon, type IconName } from './Icon';
+import { Icon } from './Icon';
 import { Logo } from './Logo';
 
 export const NAV = [
@@ -31,16 +31,11 @@ interface Props {
   email?: string;
   goals: Goal[];
   active: string;
-  isExample: boolean;
-  onUploadNew: () => void;
-  onEdit: () => void;
-  onDownloadCv: () => void;
-  onReset: () => void;
 }
 
-type Pop = 'bell' | 'menu' | null;
+type Pop = 'bell' | null;
 
-export function NavBar({ name, tagline, email, goals, active, isExample, onUploadNew, onEdit, onDownloadCv, onReset }: Props) {
+export function NavBar({ name, tagline, email, goals, active }: Props) {
   const [pop, setPop] = useState<Pop>(null);
   const [mobile, setMobile] = useState(false);
   const [search, setSearch] = useState(false);
@@ -80,12 +75,6 @@ export function NavBar({ name, tagline, email, goals, active, isExample, onUploa
   }, [search]);
 
   const toggle = (p: Pop) => setPop((cur) => (cur === p ? null : p));
-  const actions: { icon: IconName; label: string; run: () => void }[] = [
-    { icon: 'upload', label: isExample ? 'Upload a CV' : 'Upload a new CV', run: onUploadNew },
-    { icon: 'edit', label: 'Edit details', run: onEdit },
-    { icon: 'download', label: isExample ? 'Download the sample CV' : 'Download the CV', run: onDownloadCv },
-  ];
-  if (!isExample) actions.push({ icon: 'refresh', label: 'Back to the example', run: onReset });
 
   return (
     <header ref={ref} className={`nav ${scrolled ? 'is-scrolled' : ''}`}>
@@ -152,44 +141,16 @@ export function NavBar({ name, tagline, email, goals, active, isExample, onUploa
                     ))}
                   </ul>
                 ) : (
-                  <p className="popover__empty">Add a Goals section to the CV to show it here.</p>
+                  <p className="popover__empty">Add goals to src/data/profile.ts to show them here.</p>
                 )}
               </div>
             )}
           </div>
 
-          <div className="nav__pop">
-            <button className="nav__avatar" aria-label="Dashboard options" aria-haspopup="menu" aria-expanded={pop === 'menu'} onClick={() => toggle('menu')}>
-              <Icon name="user" size={19} />
-            </button>
-            {pop === 'menu' && (
-              <ul className="popover" role="menu">
-                {actions.map((a) => (
-                  <li key={a.label} role="none">
-                    <button
-                      role="menuitem"
-                      onClick={() => {
-                        setPop(null);
-                        a.run();
-                      }}
-                    >
-                      <Icon name={a.icon} size={16} /> {a.label}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
 
-          {isExample ? (
-            <button className="pill pill--sm nav__cta" onClick={onUploadNew}>
-              Upload CV
-            </button>
-          ) : (
-            <a className="pill pill--sm nav__cta" href={email ? `mailto:${email}` : '#contact'}>
-              Get in touch
-            </a>
-          )}
+          <a className="pill pill--sm nav__cta" href={email ? `mailto:${email}` : '#contact'}>
+            Get in touch
+          </a>
           <button className="nav__icon nav__burger" aria-label="Open menu" aria-expanded={mobile} onClick={() => setMobile((m) => !m)}>
             <Icon name={mobile ? 'close' : 'menu'} size={17} />
           </button>
